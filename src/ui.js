@@ -1,6 +1,7 @@
 // HUD, toasts, speech bubbles and the 甩锅报告.
 
 import { POWERS, TIMED } from './powers.js';
+import { isFlipped } from './sim.js';
 
 const $ = id => document.getElementById(id);
 export const NAMES = ['师兄', '师妹'];
@@ -20,6 +21,8 @@ export class HUD {
     this.qiFill = $('qiFill');
     this.qiLabel = $('qiLabel');
     this.tugWarn = $('tugWarn');
+    this.flipWarn = $('flipWarn');
+    this.me = -1;       // the local player, or -1 when both share this screen
     this.fxChips = $('fxChips');
     this.fxHtml = '';
     this.lastNearT = -9;
@@ -57,11 +60,18 @@ export class HUD {
     this.qiWrap.classList.toggle('dual', s.boostMode === 2);
     this.qiLabel.textContent = s.boostMode === 2 ? '双修爆发!' : s.boostMode === 1 ? '独自冲刺…' : '灵力';
     this.tugWarn.classList.toggle('on', s.tug > 0.45);
+    // tell whoever got flipped, by name, so nobody has to guess why the sword went the wrong way
+    const flipped = [0, 1].filter(i => isFlipped(s.fx, i));
+    const warn = flipped.length === 2 ? '⇄ 两人都左右反了!'
+      : flipped.length === 0 ? ''
+      : flipped[0] === this.me ? '⇄ 你的左右反了!'
+      : `⇄ <span class="${CLS[flipped[0]]}">${NAMES[flipped[0]]}</span> 左右反了`;
+    if (warn !== this.flipHtml) { this.flipHtml = warn; this.flipWarn.innerHTML = warn; this.flipWarn.classList.toggle('on', !!warn); this.flipWarn.classList.toggle('mine', flipped.includes(this.me)); }
     const fx = s.fx, chips = [];
     if (fx.shield > 0) chips.push(['good', `金钟罩${fx.shield > 1 ? ' ×' + fx.shield : ''}`]);
     for (const k of TIMED) {
       if (fx[k] <= 0) continue;
-      const name = k === 'master' || k === 'usurp' ? `${NAMES[fx.masterWho]}掌剑` : k === 'curse' ? `${NAMES[fx.curseWho]}心魔` : POWERS[k].name;
+      const name = k === 'master' || k === 'usurp' ? `${NAMES[fx.masterWho]}掌剑` : k === 'curse' ? `${NAMES[fx.curseWho]}心魔` : k === 'mirror' ? `${NAMES[fx.mirrorWho]}镜像` : POWERS[k].name;
       chips.push([POWERS[k].good ? 'good' : 'bad', `${name} ${Math.ceil(fx[k])}s`]);
     }
     const html = chips.map(([c, t]) => `<span class="chip ${c}">${t}</span>`).join('');
@@ -113,6 +123,7 @@ export class HUD {
         const line = e.kind === 'master' ? `${who} 独掌飞剑 · ${other} 靠边站`
           : e.kind === 'usurp' ? `${who} 抢的锦囊 → ${other} 独掌飞剑!`
           : e.kind === 'curse' ? `${who} 左右颠倒!`
+          : e.kind === 'mirror' ? `${who} 抢的镜子 → ${other} 左右颠倒!`
           : `${who} 抢到 · ${def.desc}`;
         this.toast(`${def.good ? '吉' : '凶'} · ${def.name}!`, def.good ? 'gold' : 'bad');
         this.toast(line, 'blame');

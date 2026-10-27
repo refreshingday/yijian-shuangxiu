@@ -3,6 +3,7 @@
 import * as THREE from 'three';
 import { birdX } from './course.js';
 import { POWERS } from './powers.js';
+import { isFlipped } from './sim.js';
 
 const VIEW_BEHIND = 14, VIEW_AHEAD = 170;
 const VIEW_SIDE = 48;   // how far sideways obstacles are drawn (the sky is endless)
@@ -384,15 +385,18 @@ export class Renderer {
     this.riders[0].position.set(0, 0.17, 0.7);
     this.riders[1].position.set(0, 0.17, -0.55);
     this.swordTilt.add(this.riders[0], this.riders[1]);
-    // per-rider markers: a purple 心魔 haze and a golden 剑主 halo
+    // per-rider markers: a purple 心魔 haze, a golden 剑主 halo and a flipping ⇄ mirror when left/right are swapped
+    const flipTex = flipTexture();
     for (const r of this.riders) {
       const curse = new THREE.Mesh(new THREE.SphereGeometry(0.55, 12, 8),
         new THREE.MeshBasicMaterial({ color: '#a050ff', transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false }));
       curse.position.y = 1.5; curse.scale.set(1, 1.6, 1);
       const halo = new THREE.Mesh(new THREE.TorusGeometry(0.28, 0.035, 6, 20), new THREE.MeshBasicMaterial({ color: '#ffd36a' }));
       halo.rotation.x = Math.PI / 2; halo.position.y = 2.05; halo.visible = false;
-      r.add(curse, halo);
-      r.userData.curse = curse; r.userData.halo = halo;
+      const flip = new THREE.Sprite(new THREE.SpriteMaterial({ map: flipTex, transparent: true, depthTest: false }));
+      flip.position.y = 2.55; flip.scale.set(0.9, 0.9, 1); flip.visible = false; flip.renderOrder = 5;
+      r.add(curse, halo, flip);
+      r.userData.curse = curse; r.userData.halo = halo; r.userData.flip = flip;
     }
 
     // input arrows on the blade, one per player
@@ -607,6 +611,8 @@ export class Renderer {
       const hexed = (fx.curse > 0 && fx.curseWho === i) || fx.swap > 0;
       u.curse.material.opacity += ((hexed ? 0.45 + Math.sin(t * 12) * 0.15 : 0) - u.curse.material.opacity) * ease;
       u.halo.visible = (fx.master > 0 || fx.usurp > 0) && fx.masterWho === i;
+      u.flip.visible = isFlipped(fx, i);
+      if (u.flip.visible) u.flip.scale.set(0.9 * Math.cos(t * 5), 0.9, 1); // keeps flipping like a mirror turning
       u.halo.rotation.z = t * 3;
     }
 
@@ -824,6 +830,21 @@ export class Renderer {
 
 // ------------------------------------------------------------------ helpers
 
+
+// Silver mirror disc with ⇄, floated above a rider whose left/right are swapped.
+function flipTexture() {
+  const c = document.createElement('canvas');
+  c.width = c.height = 128;
+  const g = c.getContext('2d');
+  g.fillStyle = 'rgba(230,240,255,0.92)';
+  g.beginPath(); g.arc(64, 64, 56, 0, Math.PI * 2); g.fill();
+  g.lineWidth = 8; g.strokeStyle = '#a050ff'; g.stroke();
+  g.fillStyle = '#6a2ad0'; g.font = 'bold 76px sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle';
+  g.fillText('⇄', 64, 68);
+  const tex = new THREE.CanvasTexture(c);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
+}
 
 // Space the hovering swords of a 剑阵 across 2w.
 function layoutWall(g, w, m4) {

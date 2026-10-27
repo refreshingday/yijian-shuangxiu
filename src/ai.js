@@ -3,6 +3,7 @@
 
 import { birdX } from './course.js';
 import { POWERS } from './powers.js';
+import { isFlipped } from './sim.js';
 
 export const AI_PRESETS = {
   sharp:    { reaction: 0.12, noise: 0.05, jumpSigma: 0.03, follow: 1.0, stubborn: 0.0 },
@@ -94,8 +95,8 @@ export class AIPilot {
         Math.sign(partnerInput.steer) === Math.sign(err) && Math.sign(need) !== Math.sign(err)) need = 0;
     out.steer = clamp(need + this.gauss() * o.noise, -1, 1);
     if (Math.abs(out.steer) < 0.08) out.steer = 0;
-    // 心魔 / 阴阳颠倒: it takes the AI a moment to realise its left/right are swapped too
-    const cursed = (s.fx.curse > 0 && s.fx.curseWho === this.idx) || s.fx.swap > 0;
+    // 心魔 / 镜花水月 / 阴阳颠倒: it takes the AI a moment to realise its left/right are swapped too
+    const cursed = isFlipped(s.fx, this.idx);
     if (cursed && this.curseSince < 0) this.curseSince = s.t;
     if (!cursed) this.curseSince = -1;
     if (cursed && s.t - this.curseSince > 0.8) out.steer = -out.steer;

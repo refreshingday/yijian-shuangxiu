@@ -24,7 +24,7 @@ export const POWERS = {
   drain:   { good: false, glyph: '漏', time: 0, name: '漏灵',     desc: '灵力漏光' },
   thunder: { good: false, glyph: '雷', time: 0, name: '引雷',     desc: '天劫猛追上来' },
   seal:    { good: false, glyph: '封', time: 6, name: '封灵',     desc: '无法冲刺' },
-  mirror:  { good: false, glyph: '镜', time: 6, name: '镜花水月', desc: '画面左右翻转' },
+  mirror:  { good: false, glyph: '镜', time: 6, name: '镜花水月', desc: '镜光反射，对方左右颠倒', who: true },
   delay:   { good: false, glyph: '迟', time: 6, name: '迟钝咒',   desc: '操作慢半拍' },
   bounce:  { good: false, glyph: '跳', time: 5, name: '弹跳符',   desc: '飞剑停不下来地乱跳' },
   usurp:   { good: false, glyph: '篡', time: 6, name: '篡位',     desc: '剑主令落到对方手里', who: true },

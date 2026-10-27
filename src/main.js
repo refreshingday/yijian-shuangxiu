@@ -196,8 +196,7 @@ function frame(now) {
 
   const playing = phase === 'play' && !paused;
   if (phase !== 'menu' && sim.phase !== lastPhaseName) announcePhase(sim.phase);
-  // 镜花水月: mirror the 3D view (HUD stays readable)
-  $('gl').classList.toggle('mirror', phase !== 'menu' && sim.fx.mirror > 0);
+  hud.me = renderer.viewer;
   const steer = game && game.role === 'guest' ? sim.steer.map((v, i) => (i === game.me ? game.localSteer || 0 : v)) : sim.steer;
   renderer.update(sim, paused ? 0 : dt, { steer, onThunder: p => phase !== 'menu' && audio.event({ type: 'thunder', power: p }) });
   if (phase !== 'menu') {

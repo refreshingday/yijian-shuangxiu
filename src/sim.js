@@ -35,7 +35,7 @@ export function createState(seed) {
     boostMode: 0,   // 0 none, 1 solo, 2 双修
     tug: 0,
     pull: 0,
-    fx: Object.assign(Object.fromEntries(TIMED.map(k => [k, 0])), { shield: 0, masterWho: -1, curseWho: -1 }),
+    fx: Object.assign(Object.fromEntries(TIMED.map(k => [k, 0])), { shield: 0, masterWho: -1, curseWho: -1, mirrorWho: -1 }),
     inputLog: [],
     combo: 0, bonus: 0,
     alive: true, won: false, cause: '',
@@ -82,8 +82,8 @@ export function step(s, inputs) {
 
   // ---------- steering: final control is the SUM ----------
   let a = clamp(inputs[0].steer, -1, 1), b = clamp(inputs[1].steer, -1, 1);
-  if (fx.curse > 0) { if (fx.curseWho === 0) a = -a; else b = -b; }           // 心魔: left/right swapped
-  if (fx.swap > 0) { a = -a; b = -b; }                                         // 阴阳颠倒: both swapped
+  if (isFlipped(fx, 0)) a = -a;   // 心魔 / 镜花水月 / 阴阳颠倒: left/right swapped
+  if (isFlipped(fx, 1)) b = -b;
   const master = fx.master > 0 || fx.usurp > 0;
   if (master) { if (fx.masterWho === 0) { a *= 2; b = 0; } else { b *= 2; a = 0; } } // 剑主令: one player steers alone
   s.steer[0] = a; s.steer[1] = b;
@@ -270,6 +270,12 @@ export function step(s, inputs) {
   if (s.t >= WIN_TIME) { s.won = true; s.alive = false; s.cause = 'win'; s.events.push({ type: 'win' }); }
 }
 
+// Is player i's left/right swapped right now? Two flips cancel out.
+export function isFlipped(fx, i) {
+  const n = (fx.curse > 0 && fx.curseWho === i) + (fx.mirror > 0 && fx.mirrorWho === i) + (fx.swap > 0);
+  return n % 2 === 1;
+}
+
 // Whoever steered toward it grabbed it — that decides who 剑主令 / 心魔 / 篡位 land on.
 function grabPower(s, o, ox) {
   const d = Math.sign(ox - s.x);
@@ -287,6 +293,7 @@ function grabPower(s, o, ox) {
     case 'master': fx.master = def.time; fx.usurp = 0; fx.masterWho = by; break;
     case 'usurp': fx.usurp = def.time; fx.master = 0; fx.masterWho = 1 - by; break;
     case 'curse': fx.curse = def.time; fx.curseWho = by; break;
+    case 'mirror': fx.mirror = def.time; fx.mirrorWho = 1 - by; break; // the mirror bounces it onto the partner
     default: fx[kind] = def.time;
   }
   s.events.push({ type: 'power', kind, by, good: def.good, id: o.id });

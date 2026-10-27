@@ -88,7 +88,6 @@ kbd { background: #fff; border: 1px solid #ccc; border-bottom-width: 2px; border
 .chip { font-size: 12px; padding: 2px 8px; border-radius: 10px; background: rgba(43, 36, 72, 0.6); color: #fff; text-shadow: none; white-space: nowrap; }
 .chip.good { background: rgba(200, 150, 30, 0.88); }
 .chip.bad { background: rgba(130, 40, 220, 0.9); animation: blink .5s infinite alternate; }
-#gl.mirror { transform: scaleX(-1); }
 .volume { display: flex; align-items: center; gap: 10px; margin-top: 12px; font-size: 14px; color: #7a6a8a; }
 .volume input { flex: 1; accent-color: #6a4a8a; }
 .volume output { width: 3em; text-align: right; font-variant-numeric: tabular-nums; }
@@ -145,6 +144,14 @@ kbd { background: #fff; border: 1px solid #ccc; border-bottom-width: 2px; border
   color: #ff8a6a; text-shadow: 0 0 8px #fff; opacity: 0; transition: opacity .1s;
 }
 #tugWarn.on { opacity: 1; animation: shake .08s infinite; }
+#flipWarn {
+  position: absolute; left: 50%; top: 92px; transform: translateX(-50%); padding: 4px 14px; border-radius: 16px;
+  font-family: var(--brush); font-size: 22px; color: #e9dcff; background: rgba(70, 30, 140, 0.55);
+  border: 1px solid #b48aff; text-shadow: 0 0 6px #a050ff; opacity: 0; transition: opacity .15s; pointer-events: none; white-space: nowrap;
+}
+#flipWarn.on { opacity: 1; }
+#flipWarn.mine { font-size: 28px; animation: flipPulse .5s infinite alternate; }
+@keyframes flipPulse { to { box-shadow: 0 0 18px #b48aff; } }
 @keyframes shake { 0% { transform: translateX(-52%); } 50% { transform: translateX(-48%); } }
 
 .bubble {
