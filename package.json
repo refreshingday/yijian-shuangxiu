@@ -1,0 +1,8 @@
+{
+  "name": "yijian-shuangxiu",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "soak": "node tools/soak.js"
+  }
+}

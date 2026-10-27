@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="zh">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#2b2448">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <title>一剑双修</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <script type="importmap">
+    { "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js" } }
+  </script>
+</head>
+<body>
+  <canvas id="gl"></canvas>
+
+  <!-- in-game HUD -->
+  <div id="hud" class="hidden">
+    <div class="hud-top">
+      <div class="hud-left">
+        <div id="hearts"></div>
+        <div id="phase">筑基</div>
+      </div>
+      <div class="hud-center">
+        <div id="timer">0:00 <small>/ 4:00</small></div>
+        <div id="trib"><span class="trib-icon">⚡天劫</span><div class="trib-bar"><div id="tribFill"></div></div></div>
+        <div id="fxChips"></div>
+      </div>
+      <div class="hud-right">
+        <div id="dist">0 丈</div>
+        <div id="stones">灵石 0</div>
+        <div class="hud-btns">
+          <button id="volBtn" aria-label="音量">🔊</button>
+          <button id="pauseBtn" aria-label="暂停">❚❚</button>
+        </div>
+        <div id="volPop" class="hidden"><input type="range" id="volHud" min="0" max="100" step="5" value="50"><output id="volHudOut">50%</output></div>
+      </div>
+    </div>
+    <div id="toasts"></div>
+    <div id="tugWarn">拉扯中!</div>
+    <div class="hud-bottom">
+      <div class="meter m0"><label>师兄</label><div class="meter-track"><div class="meter-fill"></div></div></div>
+      <div id="qiWrap"><div id="qiLabel">灵力</div><div class="qi-track"><div id="qiFill"></div></div></div>
+      <div class="meter m1"><label>师妹</label><div class="meter-track"><div class="meter-fill"></div></div></div>
+    </div>
+    <div id="taunts"></div>
+    <div class="bubble" id="bubble0"></div>
+    <div class="bubble" id="bubble1"></div>
+    <div id="vignette"></div>
+  </div>
+
+  <div id="touch"></div>
+  <div id="countdown" class="hidden"></div>
+
+  <!-- menu -->
+  <div id="menu" class="screen">
+    <div class="panel">
+      <h1>一剑双修</h1>
+      <p class="sub">两人一剑 · 同心御剑 · 吵架飞升</p>
+
+      <div class="field">
+        <div class="field-label">模式</div>
+        <div class="seg" data-name="mode">
+          <button data-v="solo" class="on">单人 + 剑灵</button>
+          <button data-v="online">联机双人</button>
+          <button data-v="local2">本地双人</button>
+          <button data-v="watch">剑灵对练</button>
+        </div>
+      </div>
+
+      <div class="field" id="genderField">
+        <div class="field-label" id="genderLabel">你是</div>
+        <div class="seg gender" data-name="gender">
+          <button data-v="0" class="on"><span class="g-ico">☀</span>师兄 · 阳</button>
+          <button data-v="1"><span class="g-ico">☾</span>师妹 · 阴</button>
+        </div>
+        <div class="hint" id="genderHint">另一位自动成为你的道侣（一男一女，不可重复）</div>
+      </div>
+
+      <div class="field" id="aiField">
+        <div class="field-label">剑灵性格</div>
+        <div class="seg" data-name="ai">
+          <button data-v="sharp">默契</button>
+          <button data-v="normal" class="on">普通</button>
+          <button data-v="stubborn">倔强</button>
+        </div>
+      </div>
+
+      <div class="field hidden" id="onlineField">
+        <div class="field-label">房间</div>
+        <div class="online-row">
+          <button id="hostBtn" class="mid">创建房间</button>
+          <input id="codeInput" maxlength="4" placeholder="房间号" autocomplete="off" autocapitalize="characters" spellcheck="false">
+          <button id="joinBtn" class="mid">加入</button>
+        </div>
+        <div class="hint">创建后把 4 位房间号（或链接）发给道侣。点对点直连，不经过游戏服务器。</div>
+      </div>
+
+      <label class="volume">音量 <input type="range" id="volMenu" min="0" max="100" step="5" value="50"><output id="volMenuOut">50%</output></label>
+
+      <button id="startBtn" class="big">御剑起飞</button>
+      <button id="fsBtn" class="link-btn hidden">⛶ 全屏横屏</button>
+
+      <details class="howto">
+        <summary>玩法</summary>
+        <ul>
+          <li>两人<b>同时</b>操控一把飞剑，最终方向 = 两人输入<b>相加</b>。方向相反就会互相抵消、剑身震颤。</li>
+          <li>一人转向只有一半速度，躲闪要两人一起。</li>
+          <li><b>跳</b>：一人按 = 小跳；两人 0.2 秒内同时按 = <b>腾空</b>大跳（剑阵与大漩涡必须腾空）。</li>
+          <li><b>冲</b>：消耗共享灵力加速；两人同时冲 = <b>双修爆发</b>，更快且无敌撞碎障碍。</li>
+          <li>天空无边无际，想往哪飞都行：浮石要躲；锁灵链、剑阵、罡风漩涡有长有短，可以绕过去，也可以跳过去——绕远还是硬跳？吵吧。漩涡还会把靠近的飞剑吸进去！</li>
+          <li><b>锦囊</b>上写着是什么：金色是吉（罩 云 巨 令 丹 泉 驱 吸 定），紫色是凶（魔 颠 醉 雾 黏 风 漏 雷 封 镜 迟 跳 篡）——六成是凶！要躲要抢，两人得商量好。</li>
+          <li>擦肩而过加灵力；连续同步腾空有「默契」连击加分。</li>
+          <li><b>阴阳天眼</b>（化神起）：师妹看得见隐形的暗石，师兄看得穿假的幻象石——各看一半，只能靠嘴说！</li>
+          <li>身后天劫雷云紧追，太慢会被追上。撑过 4:00 即可渡劫飞升。</li>
+        </ul>
+        <div class="keys" id="keysHelp"></div>
+      </details>
+    </div>
+  </div>
+
+  <!-- online lobby -->
+  <div id="lobby" class="screen hidden">
+    <div class="panel">
+      <h2>联机房间</h2>
+      <div class="room-code" id="roomCode">····</div>
+      <button id="copyLinkBtn" class="link-btn">复制邀请链接</button>
+      <p class="sub" id="lobbyStatus">正在创建房间…</p>
+      <div class="roles">
+        <div class="role y"><b>☀ 师兄 · 阳</b><span id="role0">—</span></div>
+        <div class="role n"><b>☾ 师妹 · 阴</b><span id="role1">—</span></div>
+      </div>
+      <button id="swapBtn" class="link-btn hidden">⇄ 交换男女</button>
+      <button id="lobbyStartBtn" class="big hidden">开始御剑</button>
+      <button id="lobbyLeaveBtn">离开房间</button>
+    </div>
+  </div>
+
+  <!-- pause -->
+  <div id="pause" class="screen hidden">
+    <div class="panel small">
+      <h2>暂停</h2>
+      <button id="resumeBtn" class="big">继续</button>
+      <button id="quitBtn">返回主菜单</button>
+      <label class="volume">音量 <input type="range" id="volPause" min="0" max="100" step="5" value="50"><output id="volPauseOut">50%</output></label>
+      <label class="mute"><input type="checkbox" id="muteChk"> 静音</label>
+    </div>
+  </div>
+
+  <!-- end / blame report -->
+  <div id="end" class="screen hidden">
+    <div class="panel">
+      <h2 id="endTitle">陨落</h2>
+      <p class="sub" id="endSub"></p>
+      <div id="endStats"></div>
+      <h3>甩锅报告</h3>
+      <div id="blame"></div>
+      <div class="row">
+        <button id="againBtn" class="big">再来一局</button>
+        <button id="menuBtn">返回</button>
+      </div>
+      <button id="shareBtn" class="link-btn">📜 分享战报</button>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js"></script>
+  <script type="module" src="src/main.js"></script>
+</body>
+</html>
