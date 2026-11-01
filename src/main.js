@@ -355,7 +355,7 @@ $('swapBtn').addEventListener('click', () => {
 $('copyLinkBtn').addEventListener('click', async () => {
   const url = `${location.origin}${location.pathname}#${lobby.code}`;
   try {
-    if (navigator.share && isTouch) await navigator.share({ title: '一剑双修', text: `来一起御剑！房间号 ${lobby.code}`, url });
+    if (navigator.share && isTouch) await navigator.share({ title: '一剑同心', text: `来一起御剑！房间号 ${lobby.code}`, url });
     else { await navigator.clipboard.writeText(url); lobbyStatus('邀请链接已复制'); }
   } catch {}
 });

@@ -32,7 +32,7 @@ export function createState(seed) {
     jumpT0: -9, jumpBy: -1, upgraded: false, secondUsed: false,
     lastJump: [-9, -9],
     steer: [0, 0], ema: [0, 0], boosting: [false, false],
-    boostMode: 0,   // 0 none, 1 solo, 2 双修
+    boostMode: 0,   // 0 none, 1 solo, 2 同心
     tug: 0,
     pull: 0,
     fx: Object.assign(Object.fromEntries(TIMED.map(k => [k, 0])), { shield: 0, masterWho: -1, curseWho: -1, mirrorWho: -1 }),

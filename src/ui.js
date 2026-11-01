@@ -58,7 +58,7 @@ export class HUD {
     this.qiFill.style.width = `${s.qi}%`;
     this.qiWrap.classList.toggle('solo', s.boostMode === 1);
     this.qiWrap.classList.toggle('dual', s.boostMode === 2);
-    this.qiLabel.textContent = s.boostMode === 2 ? '双修爆发!' : s.boostMode === 1 ? '独自冲刺…' : '灵力';
+    this.qiLabel.textContent = s.boostMode === 2 ? '同心爆发!' : s.boostMode === 1 ? '独自冲刺…' : '灵力';
     this.tugWarn.classList.toggle('on', s.tug > 0.45);
     // tell whoever got flipped, by name, so nobody has to guess why the sword went the wrong way
     const flipped = [0, 1].filter(i => isFlipped(s.fx, i));
@@ -116,7 +116,7 @@ export class HUD {
     switch (e.type) {
       case 'leap': this.toast(e.combo >= 2 ? `腾空! 默契 ×${e.combo}` : '腾空!', 'gold'); if (e.late > 0.06) this.toast(`<span class="${CLS[e.by]}">${NAMES[e.by]}</span> 慢了 ${e.late.toFixed(2)}s`, 'small'); break;
       case 'offsync': this.toast(`不同步! <span class="${CLS[e.by]}">${NAMES[e.by]}</span> 慢了 ${e.late.toFixed(2)}s`, 'small bad'); break;
-      case 'dualboost': this.toast('双修爆发!', 'gold'); break;
+      case 'dualboost': this.toast('同心爆发!', 'gold'); break;
       case 'power': {
         const who = `<span class="${CLS[e.by]}">${NAMES[e.by]}</span>`, other = `<span class="${CLS[1 - e.by]}">${NAMES[1 - e.by]}</span>`;
         const def = POWERS[e.kind];
@@ -214,7 +214,7 @@ export async function shareReport(s, labels, score) {
   roundRect(x, 40, 40, W - 80, H - 80, 28); x.fill();
   const brush = '"Ma Shan Zheng", "Noto Serif SC", serif', serif = '"Noto Serif SC", serif';
   x.textAlign = 'center'; x.fillStyle = '#3a2a5a';
-  x.font = `64px ${brush}`; x.fillText('一剑双修', W / 2, 130);
+  x.font = `64px ${brush}`; x.fillText('一剑同心', W / 2, 130);
   x.font = `48px ${brush}`; x.fillStyle = s.won ? '#b07a10' : '#8a3a4a'; x.fillText(endTitle(s), W / 2, 200);
   x.font = `22px ${serif}`; x.fillStyle = '#7a6a8a'; x.fillText(endSub(s), W / 2, 240);
   const st = s.stats;
@@ -258,9 +258,9 @@ export async function shareReport(s, labels, score) {
   x.fillStyle = '#9a8aa8'; x.font = `18px ${serif}`; x.fillText('两人一剑 · 同心御剑 · 吵架飞升', W / 2, H - 70);
 
   const blob = await new Promise(r => c.toBlob(r, 'image/png'));
-  const file = new File([blob], '一剑双修战报.png', { type: 'image/png' });
+  const file = new File([blob], '一剑同心战报.png', { type: 'image/png' });
   if (navigator.canShare && navigator.canShare({ files: [file] })) {
-    try { await navigator.share({ files: [file], title: '一剑双修战报' }); return; } catch (e) { if (e.name === 'AbortError') return; }
+    try { await navigator.share({ files: [file], title: '一剑同心战报' }); return; } catch (e) { if (e.name === 'AbortError') return; }
   }
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob); a.download = file.name;

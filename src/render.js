@@ -349,7 +349,7 @@ export class Renderer {
     this.trail.position.set(0, 0.12, 4.3);
     this.swordTilt.add(this.trail);
 
-    // 双修 aura
+    // 同心 aura
     this.aura = new THREE.Mesh(new THREE.SphereGeometry(1.8, 16, 12),
       new THREE.MeshBasicMaterial({ color: '#ffd36a', transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false }));
     this.aura.scale.set(1.1, 1.2, 1.8);
