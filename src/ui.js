@@ -169,7 +169,7 @@ function reportRows(st) {
   ];
 }
 
-const pairTitle = st => st.tugTime > 8 ? `合称：「同床异梦」—— 互相拉扯了 ${st.tugTime.toFixed(0)} 秒`
+const pairTitle = st => st.tugTime > 8 ? `合称：「南辕北辙」—— 互相拉扯了 ${st.tugTime.toFixed(0)} 秒`
   : st.syncLeaps >= 8 && st.offsync <= 2 ? '合称：「心有灵犀」' : '';
 
 export function showEnd(s, labels, score) {
