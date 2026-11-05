@@ -1,4 +1,4 @@
-# 一剑双修
+# 一剑同心
 
 Two players, one flying sword. Both steer and the sword follows the **sum** of their inputs, so the game is built to make you argue. Browser 3D (Three.js), mobile-first, also plays on PC. There's no game server: online play is peer-to-peer.
 

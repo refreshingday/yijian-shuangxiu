@@ -1,4 +1,4 @@
-# 《一剑双修》 Two Cultivators, One Sword — Game Plan
+# 《一剑同心》 Two Cultivators, One Sword — Game Plan
 
 > Working title. A 2-player co-op runner in a 修仙 world: two cultivators share one flying sword, and **the sword obeys the sum of both players' inputs**. It's built to make players argue, then laugh about it.
 
@@ -18,7 +18,7 @@ A male and a female cultivator (each player picks one) stand on one flying sword
 |---|---|---|---|
 | **Steer** | Analog value −1 … +1 | `lateral = (a + b) × k`. One player alone gets **half** the turning speed. | Fast dodges need both players. When you disagree, the inputs cancel and the sword shakes. |
 | **Jump** | Tap | **Synced** (both press within 200 ms) = big leap 腾空. **One player only** = small hop. **Both press, off-sync** = hop followed by a weak second hop. | "Jump NOW!" "I did!" The game lets you see who was early or late. |
-| **Boost** 灵力冲刺 | Hold | Both players draw from **one shared 灵力 pool**. Both boosting together = 双修爆发: 1.6× speed plus short invincibility. One boosting alone = 1.3× speed and drains faster. | "Who wasted all the qi?!" The blame report will say. |
+| **Boost** 灵力冲刺 | Hold | Both players draw from **one shared 灵力 pool**. Both boosting together = 同心爆发: 1.6× speed plus short invincibility. One boosting alone = 1.3× speed and drains faster. | "Who wasted all the qi?!" The blame report will say. |
 
 **Feedback that makes the arguments clear:**
 - Each character leans in their own input direction, and an arrow under each one shows that player's live input.
@@ -31,7 +31,7 @@ A male and a female cultivator (each player picks one) stand on one flying sword
 - **天劫雷云** chases from behind. A distance gauge shows how close it is. Slow play, hits and shaking all let it close in; boosting pushes it back. If it catches you, the round ends instantly.
 - **Losing:** hearts reach 0, or the tribulation catches you.
 - **Winning (rare):** survive until **4:00** and you 渡劫成功 → 飞升 (ascension cutscene). The difficulty is tuned so most teams die between 2 and 4 minutes.
-- **Score:** distance + 灵石 collected × 双修 sync multiplier.
+- **Score:** distance + 灵石 collected × 同心 sync multiplier.
 
 ### 2.3 Pacing (fast tempo, a round lasts 2–4 min)
 
@@ -50,13 +50,13 @@ Obstacles come from hand-authored **patterns** of 2–5 s each, drawn by phase f
 
 ### 2.5 Creative "make them argue" systems
 
-1. **阴阳天眼 (asymmetric vision).** The ☯ fits 修仙 双修 well. From 化神 onward, some obstacles are **幻象**:
+1. **阴阳天眼 (asymmetric vision).** The ☯ fits the 修仙 theme well. From 化神 onward, some obstacles are **幻象**:
    - 阴-only obstacles: only the 阴 (female) player sees them. To the other player they look like empty road.
    - 阳 fakes: the 阳 (male) player sees that a scary-looking wall is an illusion you can fly through. The 阴 player sees it as solid.
    - Result: one player has to *call it out* and the other has to *trust them*. Expect "There's nothing there!" / "TRUST ME!"
 2. **心魔入侵.** For 5 s, one random player's left and right are reversed. A purple aura marks it, but only that player's screen shows "心魔: 左右颠倒". The partner just sees them steering the wrong way.
 3. **分道 forks.** The road splits in two. One branch has 灵石 for the 阳 player and the other has 灵石 for the 阴 player, and each player's personal score counts on the blame report. You still have to agree on one branch or crash into the divider.
-4. **双修 sync meter.** When both inputs point the same way, this meter fills and the score multiplier rises (×1 → ×3), and at full you get a one-hit shield. Cooperation pays, so wasting it hurts.
+4. **同心 sync meter.** When both inputs point the same way, this meter fills and the score multiplier rises (×1 → ×3), and at full you get a one-hit shield. Cooperation pays, so wasting it hurts.
 5. **Quick taunts 传音.** Four one-tap shouts float above your character: 「往左!」「跳啊!」「别冲!」「信我!」. They work during voice calls too, and they're fun when the players sit next to each other.
 6. **甩锅报告 (blame report, end screen).** This is a key feature:
    - Crashes caused, decided by whose input pushed the sword into the obstacle
